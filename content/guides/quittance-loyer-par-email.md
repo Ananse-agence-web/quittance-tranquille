@@ -20,7 +20,7 @@ Envoyez un PDF : il est lisible, imprimable et ne se modifie pas facilement. Don
 
 ## Modèle de message
 
-> Objet : Quittance de loyer — Octobre 2026
+> Objet : Quittance de loyer — octobre 2026
 >
 > Bonjour,
 >

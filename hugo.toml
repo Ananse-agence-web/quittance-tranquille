@@ -2,6 +2,8 @@ baseURL = "https://app-quittance.ananse.fr/"
 languageCode = "fr-FR"
 defaultContentLanguage = "fr"
 title = "Quittance Tranquille"
+# Pas de pages « Tags » / « Categories » (non utilisées)
+disableKinds = ["taxonomy", "term"]
 enableRobotsTXT = true
 summaryLength = 30
 
