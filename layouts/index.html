@@ -1,0 +1,189 @@
+{{ define "main" }}
+<section class="accroche">
+  <div class="conteneur">
+    <h1>Vos quittances de loyer, <em>chaque mois en un clic</em>, depuis votre agenda.</h1>
+    <p class="sous">Renseignez le bail une fois. Ajoutez les rappels à votre agenda. Chaque mois, un clic sur le lien du rappel prépare la quittance en PDF, prête à envoyer. <strong>Aucune donnée n'est envoyée sur un serveur.</strong></p>
+    <ul class="pastilles">
+      <li>{{ partial "icone.html" "gratuit" }}Gratuit</li>
+      <li>{{ partial "icone.html" "cadenas" }}Sans compte</li>
+      <li>{{ partial "icone.html" "telephone" }}Tout reste sur votre appareil</li>
+      <li>{{ partial "icone.html" "pdf" }}PDF conforme</li>
+    </ul>
+    <ol class="etapes">
+      <li><div><strong>Configurez le bail</strong><span>Bailleur, locataire, loyer, charges, jour du paiement.</span></div></li>
+      <li><div><strong>Ajoutez l'agenda</strong><span>Un fichier .ics avec vos rappels, pour Google, iPhone ou Outlook.</span></div></li>
+      <li><div><strong>Cliquez chaque mois</strong><span>Le lien du rappel ouvre la quittance du mois, pré-remplie.</span></div></li>
+    </ol>
+  </div>
+</section>
+
+<div class="conteneur outil" id="outil">
+  <form id="config" novalidate autocomplete="off"
+        data-generer="{{ "generer/" | absURL }}" data-accueil="{{ "" | absURL }}" data-jspdf="{{ "js/vendor/jspdf.umd.min.js" | relURL }}"
+        data-guide-irl="{{ "guides/revision-loyer-irl/" | absURL }}">
+
+    <section class="panneau" aria-labelledby="t1">
+      <h2 id="t1"><span class="num">1</span>Le bail</h2>
+      <div class="grille">
+        <div class="champ"><label for="b_n">Nom du bailleur <span class="oblig">*</span></label><input type="text" id="b_n" name="b_n" required placeholder="Ex. Jean Martin ou SCI Les Tilleuls"></div>
+        <div class="champ"><label for="l_n">Locataire(s) <span class="oblig">*</span></label><input type="text" id="l_n" name="l_n" required placeholder="Ex. Camille Dupont"></div>
+        <div class="champ large"><label for="b_a">Adresse du bailleur <span class="oblig">*</span></label><textarea id="b_a" name="b_a" rows="2" required placeholder="12 rue des Lilas&#10;69003 Lyon"></textarea></div>
+        <div class="champ large"><label for="a">Adresse du logement loué <span class="oblig">*</span></label><textarea id="a" name="a" rows="2" required placeholder="3 avenue de la Gare, appartement 12&#10;69007 Lyon"></textarea></div>
+        <div class="champ large">
+          <span class="legende" id="lt">Type de location</span>
+          <div class="segment" role="radiogroup" aria-labelledby="lt">
+            <label><input type="radio" name="t" value="v" checked>Vide</label>
+            <label><input type="radio" name="t" value="m">Meublé</label>
+            <label><input type="radio" name="t" value="c">Colocation</label>
+          </div>
+        </div>
+        <div class="champ"><label for="y">Loyer hors charges <span class="oblig">*</span></label><div class="montant"><input type="text" inputmode="decimal" id="y" name="y" required placeholder="700,00"></div></div>
+        <div class="champ"><label for="c">Charges</label><div class="montant"><input type="text" inputmode="decimal" id="c" name="c" placeholder="50,00"></div></div>
+        <div class="large total-ligne"><span>Total mensuel</span><strong id="total">0,00 €</strong></div>
+        <div class="champ"><label for="j">Jour du paiement du loyer</label>
+          <select id="j" name="j">{{ range seq 1 31 }}<option value="{{ . }}"{{ if eq . 5 }} selected{{ end }}>le {{ if eq . 1 }}1er{{ else }}{{ . }}{{ end }} du mois</option>{{ end }}</select>
+        </div>
+        <div class="champ" id="bloc-fin" hidden>
+          <span class="legende" id="lf">Les mois plus courts</span>
+          <div class="segment" role="radiogroup" aria-labelledby="lf">
+            <label><input type="radio" name="f" value="dernier" checked>Dernier jour</label>
+            <label><input type="radio" name="f" value="28">Le 28</label>
+          </div>
+        </div>
+      </div>
+      <details class="plus">
+        <summary>Options avancées</summary>
+        <div class="grille">
+          <div class="champ"><label for="fa">Ville (« Fait à… »)</label><input type="text" id="fa" name="fa" placeholder="Ex. Lyon"></div>
+          <div class="champ"><label for="l_e">E-mail du locataire</label><input type="email" id="l_e" name="l_e" placeholder="Pour préparer l'e-mail d'envoi"></div>
+          <label class="coche large"><input type="checkbox" id="cf" name="cf">Les charges sont un forfait (et non une provision)</label>
+        </div>
+      </details>
+    </section>
+
+    <section class="panneau" aria-labelledby="t2">
+      <h2 id="t2"><span class="num">2</span>Les rappels</h2>
+      <div class="champ">
+        <span class="legende">Me prévenir</span>
+        <div class="coches">
+          <label class="coche"><input type="checkbox" name="rappel" value="0" checked>Le jour même</label>
+          <label class="coche"><input type="checkbox" name="rappel" value="1" checked>1 jour avant</label>
+          <label class="coche"><input type="checkbox" name="rappel" value="3">3 jours avant</label>
+          <label class="coche"><input type="checkbox" name="rappel" value="7">1 semaine avant</label>
+        </div>
+      </div>
+      <div class="grille" style="margin-top:1rem">
+        <div class="champ"><label for="heure">À quelle heure</label><input type="time" id="heure" name="heure" value="09:00"></div>
+        <div class="champ"><label for="duree">Pendant</label>
+          <select id="duree" name="duree"><option value="1">1 mois</option><option value="3">3 mois</option><option value="6">6 mois</option><option value="12" selected>1 an</option><option value="24">2 ans</option><option value="36">3 ans</option></select>
+        </div>
+      </div>
+      <details class="plus">
+        <summary>Rythme et rappels en plus</summary>
+        <div class="grille">
+          <div class="champ"><label for="r">Rythme des paiements</label>
+            <select id="r" name="r"><option value="m" selected>Tous les mois</option><option value="t">Tous les trimestres</option><option value="a">Tous les ans</option></select>
+          </div>
+          <div class="champ"></div>
+          <label class="coche"><input type="checkbox" id="verif_on">Rappel « loyer bien arrivé ? »</label>
+          <div class="champ"><select id="verif" aria-label="Combien de jours après l'échéance"><option value="1">1 jour après l'échéance</option><option value="2" selected>2 jours après</option><option value="3">3 jours après</option><option value="5">5 jours après</option><option value="7">1 semaine après</option></select></div>
+          <label class="coche"><input type="checkbox" id="irl_on">Rappel annuel de révision du loyer (IRL)</label>
+          <div class="champ"><input type="date" id="irl" aria-label="Date de révision prévue au bail"><span class="aide">Date prévue au bail, ou date anniversaire du bail.</span></div>
+        </div>
+      </details>
+    </section>
+
+    <section class="panneau" aria-labelledby="t3">
+      <h2 id="t3"><span class="num">3</span>Votre agenda</h2>
+      <div class="telechargement">
+        <button type="submit" class="btn btn-principal btn-grand">{{ partial "icone.html" "agenda" }}Télécharger mon agenda (.ics)</button>
+        <div class="actions">
+          <button type="button" class="btn btn-second" id="ouvrir">{{ partial "icone.html" "pdf" }}Faire la quittance maintenant</button>
+          <button type="button" class="btn btn-second" id="copier">{{ partial "icone.html" "lien" }}Copier le lien mensuel</button>
+        </div>
+        <p class="statut" id="statut" role="status" aria-live="polite"></p>
+      </div>
+      <div class="encart encart-alerte">{{ partial "icone.html" "alerte" }}<p>Le fichier agenda et le lien contiennent les informations du bail (noms, adresses, montants). <strong>Si vous partagez votre agenda, vous partagez aussi ces informations.</strong></p></div>
+      <details class="plus">
+        <summary>Comment ajouter le fichier à mon agenda ?</summary>
+        <div class="contenu petit">
+          <p><strong>iPhone / Mac</strong> : ouvrez le fichier téléchargé, puis « Tout ajouter ».</p>
+          <p><strong>Google Agenda</strong> : sur ordinateur, Paramètres › Importer et exporter › Importer. Google applique ses propres notifications par défaut aux événements importés : vérifiez-les sur le premier rappel.</p>
+          <p><strong>Outlook</strong> : ouvrez le fichier, ou Calendrier › Ajouter un calendrier › Charger à partir d'un fichier.</p>
+          <p>Vous changez d'avis ? Supprimez les événements « Loyer de… » puis importez le nouveau fichier.</p>
+        </div>
+      </details>
+    </section>
+  </form>
+
+  <aside class="apercu-colonne" aria-label="Aperçu de la quittance">
+    <p class="apercu-titre"><span>Aperçu</span><span id="apercu-mois"></span></p>
+    <div class="feuille" id="apercu"></div>
+    <div class="encart encart-info">{{ partial "icone.html" "cadenas" }}<p>Tout est calculé ici, dans votre navigateur. <strong>Aucune donnée n'est envoyée sur un serveur</strong> : ni les noms, ni les adresses, ni les montants.</p></div>
+  </aside>
+</div>
+
+<section class="section section-teinte">
+  <div class="conteneur confiance">
+    <div>
+      <h2>Vos données restent chez vous</h2>
+      <p class="intro">Pas de compte, pas de base de données, pas de cloud. Les informations du bail sont rangées dans le lien de votre rappel, après le signe « # » : cette partie d'une adresse web n'est jamais transmise au serveur.</p>
+      <ul class="liste-coches">
+        <li>La quittance est calculée et mise en PDF sur votre téléphone ou votre ordinateur.</li>
+        <li>Le rappel vit dans votre propre agenda, pas chez nous.</li>
+        <li>Aucun cookie, aucune mesure d'audience, aucun traceur.</li>
+        <li>C'est vous qui envoyez la quittance, quand vous avez bien reçu le loyer.</li>
+      </ul>
+      <a href="{{ "confidentialite/" | relURL }}">Lire la politique de confidentialité →</a>
+    </div>
+    <div class="schema" aria-hidden="true">
+      <svg viewBox="0 0 420 250" font-family="system-ui, sans-serif">
+        <rect x="10" y="30" width="150" height="190" rx="20" fill="none" stroke="#109483" stroke-width="4"/>
+        <rect x="55" y="45" width="60" height="6" rx="3" fill="#109483"/>
+        <rect x="32" y="75" width="106" height="120" rx="8" fill="#e3f4f0"/>
+        <path d="M50 95h70M50 112h70M50 129h45" stroke="#0d6e62" stroke-width="6" stroke-linecap="round"/>
+        <path d="m60 162 14 14 28-30" fill="none" stroke="#0d6e62" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+        <text x="85" y="245" text-anchor="middle" font-size="16" font-weight="700" fill="currentColor">Votre appareil</text>
+        <path d="M175 125h70" stroke="#b9c3cc" stroke-width="5" stroke-dasharray="10 9"/>
+        <circle cx="210" cy="125" r="24" fill="#c8412e"/>
+        <path d="m199 114 22 22m0-22-22 22" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
+        <rect x="265" y="65" width="145" height="120" rx="16" fill="none" stroke="#b9c3cc" stroke-width="4"/>
+        <rect x="290" y="88" width="95" height="18" rx="4" fill="none" stroke="#b9c3cc" stroke-width="4"/>
+        <rect x="290" y="116" width="95" height="18" rx="4" fill="none" stroke="#b9c3cc" stroke-width="4"/>
+        <rect x="290" y="144" width="95" height="18" rx="4" fill="none" stroke="#b9c3cc" stroke-width="4"/>
+        <text x="337" y="215" text-anchor="middle" font-size="16" font-weight="700" fill="#8a97a3">Serveur</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="conteneur">
+    <h2>Guides et modèles</h2>
+    <p class="intro">Ce qu'une quittance doit contenir, les cas particuliers, et les gestes à connaître.</p>
+    <div class="cartes">
+      {{ range (where site.RegularPages "Section" "guides").ByWeight }}
+      <a class="carte" href="{{ .RelPermalink }}">
+        <div class="icone-ronde">{{ partial "icone.html" (.Params.icone | default "livre") }}</div>
+        <h3>{{ .Title }}</h3>
+        <p>{{ .Description }}</p>
+      </a>
+      {{ end }}
+    </div>
+  </div>
+</section>
+
+<section class="section section-teinte faq">
+  <div class="etroit">
+    <h2>Questions fréquentes</h2>
+    {{ range site.Data.faq }}
+    <details><summary>{{ .q }}</summary>{{ .r | markdownify }}</details>
+    {{ end }}
+  </div>
+</section>
+{{ end }}
+
+{{ define "scripts" }}
+{{ $js := resources.Get "js/configurateur.js" | js.Build (dict "minify" true "target" "es2020") | fingerprint }}
+<script type="module" src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
+{{ end }}

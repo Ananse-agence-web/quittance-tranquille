@@ -1,0 +1,26 @@
+baseURL = "https://app-quittance.ananse.fr/"
+languageCode = "fr-FR"
+defaultContentLanguage = "fr"
+title = "Quittance Tranquille"
+enableRobotsTXT = true
+summaryLength = 30
+
+paginate = 20
+
+[markup.goldmark.renderer]
+  unsafe = false
+
+[outputs]
+  home = ["HTML"]
+
+[permalinks]
+  guides = "/guides/:slug/"
+
+[params]
+  marque = "Quittance Tranquille"
+  slogan = "Vos quittances de loyer en un clic, chaque mois, depuis votre agenda."
+  description = "Générateur gratuit de quittances de loyer : configurez le bail une fois, ajoutez les rappels à votre agenda, et générez chaque mois la quittance en PDF. Aucune donnée envoyée sur un serveur."
+  email = "Ananse.Agence.Web@gmail.com"
+  # Site de présentation (vitrine) et outil payant d'états des lieux
+  vitrine = "https://quittance.ananse.fr/"
+  edl = "https://etat-des-lieux.ananse.fr/"

@@ -1,0 +1,106 @@
+{{ define "main" }}
+<div id="gen" data-jspdf="{{ "js/vendor/jspdf.umd.min.js" | relURL }}" data-accueil="{{ "" | absURL }}">
+
+  <div class="conteneur vide-etat" id="vide" hidden>
+    <h1>Ce lien ne contient pas de bail</h1>
+    <p class="muet">Le lien est peut-être incomplet (certains agendas coupent les liens longs). Configurez votre bail en une minute : c'est gratuit et rien n'est envoyé sur un serveur.</p>
+    <a class="btn btn-principal btn-grand" href="{{ "" | relURL }}#outil">Configurer mes quittances</a>
+  </div>
+
+  <div id="plein" hidden>
+    <div class="conteneur gen-tete">
+      <h1 id="titre">Quittance de loyer</h1>
+      <p class="muet" id="sous-titre"></p>
+    </div>
+
+    <div class="conteneur outil">
+      <div>
+        <section class="panneau" aria-labelledby="g1">
+          <h2 id="g1"><span class="num">1</span>Le paiement</h2>
+          <div class="grille">
+            <div class="champ large">
+              <span class="legende" id="ltype">Le loyer a été payé…</span>
+              <div class="segment" role="radiogroup" aria-labelledby="ltype">
+                <label><input type="radio" name="mode" value="q" checked>En totalité : quittance</label>
+                <label><input type="radio" name="mode" value="r">En partie : reçu</label>
+              </div>
+              <span class="aide" id="aide-mode">La quittance atteste du paiement intégral du loyer et des charges.</span>
+            </div>
+            <div class="champ large"><label for="mois">Période</label>
+              <div class="mois-nav">
+                <button type="button" id="prec" aria-label="Période précédente">‹</button>
+                <input type="month" id="mois">
+                <button type="button" id="suiv" aria-label="Période suivante">›</button>
+              </div>
+              <span class="aide" id="periode-texte"></span>
+            </div>
+            <div class="champ"><label for="g_y">Loyer hors charges</label><div class="montant"><input type="text" inputmode="decimal" id="g_y"></div></div>
+            <div class="champ"><label for="g_c">Charges</label><div class="montant"><input type="text" inputmode="decimal" id="g_c"></div></div>
+            <div class="large total-ligne"><span>Total dû</span><strong id="g_total"></strong></div>
+            <div class="champ large" id="bloc-verse" hidden><label for="g_v">Somme effectivement reçue</label><div class="montant"><input type="text" inputmode="decimal" id="g_v"></div><span class="aide" id="reste"></span></div>
+            <div class="champ"><label for="g_p">Date du paiement</label><input type="date" id="g_p"></div>
+            <div class="champ"><label for="g_e">Date de la quittance</label><input type="date" id="g_e"></div>
+          </div>
+          <p class="aide petit" style="margin:.8rem 0 0">Loyer révisé ? Corrigez simplement le montant ici. Pour l'appliquer aux mois suivants, <a id="lien-modifier" href="#">mettez à jour votre agenda</a>.</p>
+
+          <details class="plus">
+            <summary>Informations du bail</summary>
+            <div class="grille">
+              <div class="champ"><label for="g_bn">Bailleur</label><input type="text" id="g_bn"></div>
+              <div class="champ"><label for="g_ln">Locataire(s)</label><input type="text" id="g_ln"></div>
+              <div class="champ large"><label for="g_ba">Adresse du bailleur</label><textarea id="g_ba" rows="2"></textarea></div>
+              <div class="champ large"><label for="g_a">Adresse du logement</label><textarea id="g_a" rows="2"></textarea></div>
+              <div class="champ"><label for="g_fa">Fait à</label><input type="text" id="g_fa"></div>
+            </div>
+          </details>
+
+          <details class="plus" id="bloc-signature">
+            <summary>Signature (facultatif)</summary>
+            <div class="contenu">
+              <canvas class="pad" id="pad" aria-label="Zone de signature : signez au doigt ou à la souris"></canvas>
+              <div class="actions" style="margin-top:.6rem;align-items:center">
+                <button type="button" class="btn btn-second" id="effacer">Effacer</button>
+                <label class="coche" style="flex:1"><input type="checkbox" id="memo">Mémoriser sur cet appareil</label>
+              </div>
+              <p class="aide petit" style="margin-top:.5rem">La signature reste dans ce navigateur (stockage local) si vous cochez la case. Elle n'est jamais envoyée.</p>
+            </div>
+          </details>
+        </section>
+
+        <section class="panneau" aria-labelledby="g2">
+          <h2 id="g2"><span class="num">2</span>Le document</h2>
+          <div class="telechargement">
+            <button type="button" class="btn btn-principal btn-grand" id="pdf">{{ partial "icone.html" "telecharger" }}<span id="pdf-texte">Télécharger la quittance (PDF)</span></button>
+            <button type="button" class="btn btn-second btn-grand" id="partager" hidden>{{ partial "icone.html" "partager" }}Partager le PDF (e-mail, messagerie…)</button>
+            <p class="statut" id="statut" role="status" aria-live="polite"></p>
+          </div>
+        </section>
+
+        <section class="panneau" aria-labelledby="g3">
+          <h2 id="g3"><span class="num">3</span>L'e-mail au locataire</h2>
+          <div class="grille">
+            <div class="champ large"><label for="m_a">Destinataire</label><input type="email" id="m_a" placeholder="E-mail du locataire"></div>
+            <div class="champ large"><label for="m_o">Objet</label><input type="text" id="m_o"></div>
+            <div class="champ large"><label for="m_t">Message</label><textarea id="m_t" rows="8"></textarea></div>
+          </div>
+          <div class="actions" style="margin-top:1rem">
+            <button type="button" class="btn btn-second" id="mail">{{ partial "icone.html" "email" }}Écrire l'e-mail</button>
+          </div>
+          <div class="encart encart-info">{{ partial "icone.html" "info" }}<p>Un lien e-mail ne peut pas joindre de fichier : <strong>téléchargez d'abord le PDF</strong>, puis joignez-le au message qui s'ouvre. L'envoi par e-mail suppose l'accord du locataire ; sinon, remettez-la en main propre ou par courrier.</p></div>
+        </section>
+      </div>
+
+      <aside class="apercu-colonne" aria-label="Aperçu du document">
+        <p class="apercu-titre"><span>Aperçu</span><span id="apercu-mois"></span></p>
+        <div class="feuille" id="apercu"></div>
+        <div class="encart encart-alerte" id="rappel-q">{{ partial "icone.html" "alerte" }}<p>Ne générez la quittance qu'une fois le loyer <strong>et</strong> les charges intégralement reçus. En cas de paiement partiel, choisissez « reçu ».</p></div>
+      </aside>
+    </div>
+  </div>
+</div>
+{{ end }}
+
+{{ define "scripts" }}
+{{ $js := resources.Get "js/generer.js" | js.Build (dict "minify" true "target" "es2020") | fingerprint }}
+<script type="module" src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
+{{ end }}

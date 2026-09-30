@@ -1,0 +1,25 @@
+<footer class="pied">
+  <div class="conteneur">
+    <div>
+      <a class="logo" href="{{ "" | relURL }}"><img src="{{ "images/logo.svg" | relURL }}" alt="" width="30" height="30">Quittance <span>Tranquille</span></a>
+      <p style="margin-top:.8rem">Générateur gratuit de quittances de loyer. <strong>Aucune donnée n'est envoyée sur un serveur</strong> : tout se passe dans votre navigateur. Aucun cookie, aucun traceur.</p>
+      <a class="promo-edl" href="{{ site.Params.edl }}"><strong>Aussi pour les bailleurs :</strong> État des lieux Offline, l'état des lieux d'entrée et de sortie sur téléphone, même sans réseau →</a>
+    </div>
+    <div>
+      <h3>Guides</h3>
+      <ul>
+        {{ range first 6 (where site.RegularPages "Section" "guides").ByWeight }}<li><a href="{{ .RelPermalink }}">{{ .Params.court | default .Title }}</a></li>{{ end }}
+      </ul>
+    </div>
+    <div>
+      <h3>Le site</h3>
+      <ul>
+        <li><a href="{{ "" | relURL }}#outil">Créer mes quittances</a></li>
+        <li><a href="{{ site.Params.vitrine }}">Présentation en vidéo</a></li>
+        <li><a href="{{ "confidentialite/" | relURL }}">Politique de confidentialité</a></li>
+        <li><a href="{{ "mentions-legales/" | relURL }}">Mentions légales</a></li>
+      </ul>
+      <p class="petit" style="margin-top:1rem">© {{ now.Year }} {{ site.Params.marque }}. Les guides donnent des informations générales et ne remplacent pas un conseil juridique.</p>
+    </div>
+  </div>
+</footer>

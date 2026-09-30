@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  {{ partial "head.html" . }}
+</head>
+<body>
+  <a class="evitement" href="#contenu">Aller au contenu</a>
+  {{ partial "entete.html" . }}
+  <main id="contenu">
+    {{ block "main" . }}{{ end }}
+  </main>
+  {{ partial "pied.html" . }}
+  {{ block "scripts" . }}{{ end }}
+</body>
+</html>

@@ -1,0 +1,10 @@
+<header class="entete">
+  <div class="conteneur">
+    <a class="logo" href="{{ "" | relURL }}"><img src="{{ "images/logo.svg" | relURL }}" alt="" width="34" height="34">Quittance <span>Tranquille</span></a>
+    <nav class="nav" aria-label="Navigation principale">
+      <a href="{{ "" | relURL }}#outil"{{ if .IsHome }} aria-current="page"{{ end }}>L'outil</a>
+      <a href="{{ "guides/" | relURL }}"{{ if eq .Section "guides" }} aria-current="page"{{ end }}>Guides</a>
+      <a class="opt" href="{{ "confidentialite/" | relURL }}">Confidentialité</a>
+    </nav>
+  </div>
+</header>

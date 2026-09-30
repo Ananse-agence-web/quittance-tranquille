@@ -1,0 +1,21 @@
+{{ define "main" }}
+<section class="section">
+  <div class="conteneur">
+    <h1>{{ .Title }}</h1>
+    <p class="intro">{{ .Description }}</p>
+    <div class="cartes">
+      {{ range .Pages.ByWeight }}
+      <a class="carte" href="{{ .RelPermalink }}">
+        <div class="icone-ronde">{{ partial "icone.html" (.Params.icone | default "livre") }}</div>
+        <h3>{{ .Title }}</h3>
+        <p>{{ .Description }}</p>
+      </a>
+      {{ end }}
+    </div>
+    <div class="appel">
+      <div><h2>Prêt à faire vos quittances ?</h2><p>Configurez le bail une fois, l'agenda s'occupe du reste.</p></div>
+      <a class="btn btn-grand" href="{{ "" | relURL }}#outil">Ouvrir l'outil</a>
+    </div>
+  </div>
+</section>
+{{ end }}

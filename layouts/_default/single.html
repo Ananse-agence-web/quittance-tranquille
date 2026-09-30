@@ -1,0 +1,20 @@
+{{ define "main" }}
+<article class="article">
+  <div class="etroit">
+    {{ if eq .Section "guides" }}<p class="fil"><a href="{{ "" | relURL }}">Accueil</a> › <a href="{{ "guides/" | relURL }}">Guides</a></p>{{ end }}
+    <h1>{{ .Title }}</h1>
+    {{ with .Params.chapo }}<p class="chapo">{{ . }}</p>{{ end }}
+    {{ .Content }}
+    {{ if eq .Section "guides" }}
+    <div class="appel">
+      <div>
+        <h2>Vos quittances, chaque mois en un clic</h2>
+        <p>Gratuit, sans compte. Aucune donnée envoyée sur un serveur.</p>
+      </div>
+      <a class="btn btn-grand" href="{{ "" | relURL }}#outil">Créer mes quittances</a>
+    </div>
+    <p class="avertissement">Informations générales, à jour à la date de publication ; elles ne constituent pas un conseil juridique. Vérifiez votre situation sur service-public.fr ou auprès d'un professionnel (ADIL, avocat, notaire).</p>
+    {{ end }}
+  </div>
+</article>
+{{ end }}

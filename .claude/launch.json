@@ -1,0 +1,6 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    { "name": "app", "runtimeExecutable": "hugo", "runtimeArgs": ["server", "--port", "1320", "--disableFastRender"], "port": 1320 }
+  ]
+}

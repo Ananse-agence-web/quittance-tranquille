@@ -1,0 +1,64 @@
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{{ $titre := cond .IsHome (printf "%s — %s" site.Params.marque "générateur gratuit de quittances de loyer") (printf "%s — %s" .Title site.Params.marque) }}
+{{ $desc := or .Description .Summary site.Params.description | plainify | truncate 160 }}
+<title>{{ $titre }}</title>
+<meta name="description" content="{{ $desc }}">
+<link rel="canonical" href="{{ .Permalink }}">
+{{ with .Params.robots }}<meta name="robots" content="{{ . }}">{{ end }}
+<meta name="theme-color" content="#0d6e62">
+<meta name="color-scheme" content="light dark">
+<meta name="referrer" content="no-referrer">
+<link rel="icon" href="{{ "images/logo.svg" | relURL }}" type="image/svg+xml">
+<link rel="apple-touch-icon" href="{{ "apple-touch-icon.png" | relURL }}">
+<meta property="og:type" content="{{ if .IsPage }}article{{ else }}website{{ end }}">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:site_name" content="{{ site.Params.marque }}">
+<meta property="og:title" content="{{ $titre }}">
+<meta property="og:description" content="{{ $desc }}">
+<meta property="og:url" content="{{ .Permalink }}">
+<meta property="og:image" content="{{ "images/partage.png" | absURL }}">
+<meta name="twitter:card" content="summary_large_image">
+{{ $css := resources.Get "css/main.css" | minify | fingerprint }}
+<link rel="stylesheet" href="{{ $css.RelPermalink }}" integrity="{{ $css.Data.Integrity }}">
+{{ if .IsHome }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": {{ site.Params.marque }},
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "Navigateur web",
+  "description": {{ site.Params.description }},
+  "inLanguage": "fr",
+  "isAccessibleForFree": true,
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "EUR" }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {{- range $i, $f := site.Data.faq }}{{ if $i }},{{ end }}
+    { "@type": "Question", "name": {{ $f.q }}, "acceptedAnswer": { "@type": "Answer", "text": {{ $f.r | markdownify | plainify }} } }
+    {{- end }}
+  ]
+}
+</script>
+{{ end }}
+{{ if and .IsPage (eq .Section "guides") }}
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": {{ .Title }},
+  "description": {{ $desc }},
+  "datePublished": {{ .Date.Format "2006-01-02" }},
+  "dateModified": {{ .Lastmod.Format "2006-01-02" }},
+  "inLanguage": "fr",
+  "mainEntityOfPage": {{ .Permalink }},
+  "publisher": { "@type": "Organization", "name": {{ site.Params.marque }} }
+}
+</script>
+{{ end }}
